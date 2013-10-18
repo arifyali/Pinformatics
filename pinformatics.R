@@ -40,16 +40,18 @@ for(i in 1:num.of.Pin.Board.URL){
        Pin.Author = ifelse(is(try(as.character(sapply(getNodeSet(Pinned.URL, "//h4[@class = 'fullname']"), xmlValue))
                                   , silent=T), "try-error"), "Unknown Author",
                            as.character(sapply(getNodeSet(Pinned.URL, "//h4[@class = 'fullname']"), xmlValue)))
+       print(Pin.Author)
        Pinner = c(Pinner,Pin.Author)
        Pin.Source = ifelse(is(try(as.character(sapply(getNodeSet(Pinned.URL, "//h4[@class = 'richPinSourceWrapper']"), xmlValue))
                                   , silent=T), "try-error"), "Unknown Origin",
                            as.character(sapply(getNodeSet(Pinned.URL, "//h4[@class = 'richPinSourceWrapper']"), xmlValue)))
-      Pin.Origin = c(Pin.Origin,Pin.Source)
-      Repin.Analysis.current.pin = 
-        ifelse(is(try(as.character(getNodeSet(Repined.URL, "//a[@class = 'boardLinkWrapper']/@href"))
-                                                 , silent=T), "try-error"), "No Repin URL",
-               paste("http://pinterest.com", 
-                     as.character(getNodeSet(Repined.URL, "//a[@class = 'boardLinkWrapper']/@href")), "followers/", sep=""))
+       print(Pin.Source)
+       Pin.Origin = c(Pin.Origin,Pin.Source)
+#       Repin.Analysis.current.pin = 
+#         ifelse(is(try(as.character(getNodeSet(Repined.URL, "//a[@class = 'boardLinkWrapper']/@href"))
+#                                                  , silent=T), "try-error"), "No Repin URL",
+#                paste("http://pinterest.com", 
+#                      as.character(getNodeSet(Repined.URL, "//a[@class = 'boardLinkWrapper']/@href")), "followers/", sep=""))
 # #       Repin.Analysis.current.pin = Repin.Analysis.current.pin[Repin.Analysis.current.pin != "http://pinterest.com/followers/"]
 # #       RepinFollows.pin = c()
 # #       for(i in 1:length(Repin.Analysis.current.pin)){
