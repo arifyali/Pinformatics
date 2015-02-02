@@ -1,9 +1,9 @@
-####August 31th came up with the idea of a Infomatics page
+####August 31th came up with the idea of a Infomatics page after miserable Dot & Bo internship experience
 ###Sept 6th, file was created and attempts at hacks were carried out but unsuccessful
 ####Sept 12th, successfully wrote a section of script to access the Pin Borad URLS of a User
 ####Sept 13th, the data was not sucessfully when extracting Pin Board Names
 ####Sept 21st, major data issues were fixed, all that is left is extracting Likes, 
-####Repins and the sum of followers from Re-Pinner. Issue with speed. Project suspended until Oct. 17th 
+####Repins and the sum of followers from Re-Pinner. Issue with speed. Project suspended. 
 library(XML)
 pinformatics = function(userURL){
 User.info = htmlParse(userURL, useInternal = TRUE)
