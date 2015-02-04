@@ -2,5 +2,5 @@ Pinformatics
 ============
 
 My personal project
-<li> The Pinfromatics Script</li>
-<li> Using R Shiny to let people actually use it!<\il>
+<ul> The Pinfromatics Script</ul>
+<ul> Using R Shiny to let people actually use it!<\ul>
