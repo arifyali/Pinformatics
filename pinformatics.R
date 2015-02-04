@@ -7,7 +7,7 @@
 ####Repins and the sum of followers from Re-Pinner_ Issue with speed_ Project suspended_ 
 ###2015
 ####Febuary 2nd: Project has been restarted, htmlParse doesn't work. 
-####Febuary 3rd: do to https secure security, I developed a workaround with the httr package 
+####Febuary 3rd: do to https  security, workaround with the httr package, issues with the Pin analyzer (line 28-38) 
 
 
 library(XML)
@@ -16,9 +16,7 @@ library(httr)
 pinformatics = function(userURL){
 User_info =  htmlTreeParse(GET(userURL),useInternalNodes = T)
 ###Above step allows the access to the user profile, I will add custom error
-Pin_Board_URL = as.character(getNodeSet(User_info, "//a[@class = 'boardLinkWrapper']/@href"))
-Pin_Board_URL = paste("http://pinterest.com", Pin_Board_URL, sep = "")
-num_of_Pin_Board_URL = length(Pin_Board_URL)
+Pin_Board_URL = paste("http://pinterest.com", as.character(getNodeSet(User_info, "//a[@class = 'boardLinkWrapper']/@href")), sep = "")
 Pin_Board_Name = sapply(strsplit(Pin_Board_URL,"/"), tail, n=1)
 Pin_Count = as.numeric(gsub("[^0-9]*", "", sapply(getNodeSet(User_info, "//div[@class='PinCount Module']"), xmlValue))) 
 Pin_URL = c()
@@ -26,7 +24,8 @@ ID_Pin_Board = c()
 Repin_URL = c()
 Pinner = c()
 Pin_Origin = c()
-for(i in 1:num_of_Pin_Board_URL){
+##This For loop should scrape from every board, information on each Pin's Re Pinner !Issue!
+for(i in 1:length(Pin_Board_URL)){
     Pin_Board_Info = htmlParse(GET(Pin_Board_URL[i]), useInternal = TRUE)
     sudo_URL = as.character(getNodeSet(Pin_Board_Info, "//a[@class = 'pinImageWrapper ']/@href"))
     sudo_URL = paste("http://pinterest.com", sudo_URL, sep = "")
@@ -34,7 +33,7 @@ for(i in 1:num_of_Pin_Board_URL){
     if(length(sudo_URL)>0){
       sudo_Repin_URL = paste(sudo_URL, "repins/", sep = "")
       Pin_URL = c(Pin_URL, sudo_URL)
-      Repin_URL = c(Repin_URL, sudo_Repin_URL)
+    Repin_URL = c(Repin_URL, sudo_Repin_URL)
     }
 }
 Pin_Summary = data.frame(Pin_URL,ID_Pin_Board
