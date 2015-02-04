@@ -6,11 +6,15 @@
 ####Sept 21st, major data issues were fixed, all that is left is extracting Likes, 
 ####Repins and the sum of followers from Re-Pinner_ Issue with speed_ Project suspended_ 
 ###2015
-#####Febuary 2nd: Project has been restarted, htmlParse doesn't work. 
+####Febuary 2nd: Project has been restarted, htmlParse doesn't work. 
+####Febuary 3rd: do to https secure security, I developed a workaround with the httr package 
+
+
 library(XML)
 library(RCurl)
+library(httr)
 pinformatics = function(userURL){
-User_info = htmlParse(userURL, useInternal = TRUE)
+User_info =  htmlTreeParse(GET(userURL),useInternalNodes = T)
 ###Above step allows the access to the user profile, I will add custom error
 Pin_Board_URL = as.character(getNodeSet(User_info, "//a[@class = 'boardLinkWrapper']/@href"))
 Pin_Board_URL = paste("http://pinterest.com", Pin_Board_URL, sep = "")
@@ -23,59 +27,63 @@ Repin_URL = c()
 Pinner = c()
 Pin_Origin = c()
 for(i in 1:num_of_Pin_Board_URL){
-    Pin_Board_Info = htmlParse(Pin_Board_URL[i], useInternal = TRUE)
+    Pin_Board_Info = htmlParse(GET(Pin_Board_URL[i]), useInternal = TRUE)
     sudo_URL = as.character(getNodeSet(Pin_Board_Info, "//a[@class = 'pinImageWrapper ']/@href"))
     sudo_URL = paste("http://pinterest.com", sudo_URL, sep = "")
     sudo_URL = sudo_URL[sudo_URL!="http://pinterest.com"]
-    sudo_Repin_URL = paste(sudo_URL, "repins/", sep = "")
-    Pin_URL = c(Pin_URL, sudo_URL)
-    Repin_URL = c(Repin_URL, sudo_Repin_URL)
-    
-    ####issues
-     for(i in 1:length(sudo_URL)){
-       Pinned_URL = htmlParse(sudo_URL[i], useInternal = TRUE)
-       Repined_URL = htmlParse(sudo_Repin_URL[i], useInternal = TRUE)
-       print(sudo_URL[i])
-       Pined_Board = ifelse(is(try(as.character(sapply(getNodeSet(Pinned_URL, "//h4[@class = 'boardRepSubtitle']"), xmlValue))
-                                   , silent=T), "try-error"), "Unknown Pinboard",
-                            as.character(sapply(getNodeSet(Pinned_URL, "//h4[@class = 'boardRepSubtitle']"), xmlValue)))
-       print(Pined_Board)
-       ID_Pin_Board = c(ID_Pin_Board, Pined_Board)
-       Pin_Author = ifelse(is(try(as.character(sapply(getNodeSet(Pinned_URL, "//h4[@class = 'fullname']"), xmlValue))
-                                  , silent=T), "try-error"), "Unknown Author",
-                           as.character(sapply(getNodeSet(Pinned_URL, "//h4[@class = 'fullname']"), xmlValue)))
-       print(Pin_Author)
-       Pinner = c(Pinner,Pin_Author)
-       Pin_Source = ifelse(is(try(as.character(sapply(getNodeSet(Pinned_URL, "//h4[@class = 'richPinSourceWrapper']"), xmlValue))
-                                  , silent=T), "try-error"), "Unknown Origin",
-                           as.character(sapply(getNodeSet(Pinned_URL, "//h4[@class = 'richPinSourceWrapper']"), xmlValue)))
-       print(Pin_Source)
-       Pin_Origin = c(Pin_Origin,Pin_Source)
-#       Repin_Analysis_current_pin = 
-#         ifelse(is(try(as.character(getNodeSet(Repined_URL, "//a[@class = 'boardLinkWrapper']/@href"))
-#                                                  , silent=T), "try-error"), "No Repin URL",
-#                paste("http://pinterest.com", 
-#                      as.character(getNodeSet(Repined_URL, "//a[@class = 'boardLinkWrapper']/@href")), "followers/", sep=""))
-# #       Repin_Analysis_current_pin = Repin_Analysis_current_pin[Repin_Analysis_current_pin != "http://pinterest.com/followers/"]
-# #       RepinFollows_pin = c()
-# #       for(i in 1:length(Repin_Analysis_current_pin)){
-# #         RepinDoc = htmlParse(Repin_Analysis_current_pin, useInternal = TRUE)
-# #       
-# #       ###errors
-# #         RepinFollows_pin = ifelse(is(try(getNodeSet(RepinDoc, ""), 
-# #                                      silent=T), "try-error"), 0,
-# #           sapply(getNodeSet(RepinDoc, "//a[@class ='active']"), xmlValue))
- ####apply t-text
-# #              print(RepinFollows_pin)         
-# #       }
-# #       sum(RepinFollows_pin)
+    if(length(sudo_URL)>0){
+      sudo_Repin_URL = paste(sudo_URL, "repins/", sep = "")
+      Pin_URL = c(Pin_URL, sudo_URL)
+      Repin_URL = c(Repin_URL, sudo_Repin_URL)
     }
+}
+Pin_Summary = data.frame(Pin_URL,ID_Pin_Board
+                         , Pinner, Pin_Origin)
+    ####issues
+#      for(i in 1:length(sudo_URL)){
+#        Pinned_URL = htmlParse(GET(sudo_URL[i]), useInternal = TRUE)
+#        Repined_URL = htmlParse(GET(sudo_Repin_URL[i]), useInternal = TRUE)
+#        print(sudo_URL[i])
+#        Pined_Board = ifelse(is(try(as.character(sapply(getNodeSet(Pinned_URL, "//h4[@class = 'boardRepSubtitle']"), xmlValue))
+#                                    , silent=T), "try-error"), "Unknown Pinboard",
+#                             as.character(sapply(getNodeSet(Pinned_URL, "//h4[@class = 'boardRepSubtitle']"), xmlValue)))
+#        print(Pined_Board)
+#        ID_Pin_Board = c(ID_Pin_Board, Pined_Board)
+#        Pin_Author = ifelse(is(try(as.character(sapply(getNodeSet(Pinned_URL, "//h4[@class = 'fullname']"), xmlValue))
+#                                   , silent=T), "try-error"), "Unknown Author",
+#                            as.character(sapply(getNodeSet(Pinned_URL, "//h4[@class = 'fullname']"), xmlValue)))
+#        print(Pin_Author)
+#        Pinner = c(Pinner,Pin_Author)
+#        Pin_Source = ifelse(is(try(as.character(sapply(getNodeSet(Pinned_URL, "//h4[@class = 'richPinSourceWrapper']"), xmlValue))
+#                                   , silent=T), "try-error"), "Unknown Origin",
+#                            as.character(sapply(getNodeSet(Pinned_URL, "//h4[@class = 'richPinSourceWrapper']"), xmlValue)))
+#        print(Pin_Source)
+#        Pin_Origin = c(Pin_Origin,Pin_Source)
+# #       Repin_Analysis_current_pin = 
+# #         ifelse(is(try(as.character(getNodeSet(Repined_URL, "//a[@class = 'boardLinkWrapper']/@href"))
+# #                                                  , silent=T), "try-error"), "No Repin URL",
+# #                paste("http://pinterest.com", 
+# #                      as.character(getNodeSet(Repined_URL, "//a[@class = 'boardLinkWrapper']/@href")), "followers/", sep=""))
+# # #       Repin_Analysis_current_pin = Repin_Analysis_current_pin[Repin_Analysis_current_pin != "http://pinterest.com/followers/"]
+# # #       RepinFollows_pin = c()
+# # #       for(i in 1:length(Repin_Analysis_current_pin)){
+# # #         RepinDoc = htmlParse(Repin_Analysis_current_pin, useInternal = TRUE)
+# # #       
+# # #       ###errors
+# # #         RepinFollows_pin = ifelse(is(try(getNodeSet(RepinDoc, ""), 
+# # #                                      silent=T), "try-error"), 0,
+# # #           sapply(getNodeSet(RepinDoc, "//a[@class ='active']"), xmlValue))
+#  ####apply t-text
+# # #              print(RepinFollows_pin)         
+# # #       }
+# # #       sum(RepinFollows_pin)
+#     }
 }
 #    ###Likes
 #    ###Repins
 #    ###The Number of user reached by Repins
- Pin_Summary = data.frame(Pin_URL,ID_Pin_Board
-                          , Pinner, Pin_Origin)
+#  Pin_Summary = data.frame(Pin_URL,ID_Pin_Board
+#                           , Pinner, Pin_Origin)
 return(Pin_Summary)
 }
 
