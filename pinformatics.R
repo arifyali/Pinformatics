@@ -8,7 +8,7 @@
 ###2015
 ####Febuary 2nd: Project has been restarted, htmlParse doesn't work. 
 ####Febuary 3rd: do to https  security, workaround with the httr package, issues with the Pin analyzer (line 28-38) 
-
+####Feburary 4th, Pin Analyzer fixed
 
 library(XML)
 library(RCurl)
@@ -27,17 +27,16 @@ Pin_Origin = c()
 ##This For loop should scrape from every board, information on each Pin's Re Pinner !Issue!
 for(i in 1:length(Pin_Board_URL)){
     Pin_Board_Info = htmlParse(GET(Pin_Board_URL[i]), useInternal = TRUE)
-    sudo_URL = as.character(getNodeSet(Pin_Board_Info, "//a[@class = 'pinImageWrapper ']/@href"))
+    sudo_URL = as.character(getNodeSet(Pin_Board_Info, "//a[@class = 'pinImageWrapper']/@href"))
     sudo_URL = paste("http://pinterest.com", sudo_URL, sep = "")
     sudo_URL = sudo_URL[sudo_URL!="http://pinterest.com"]
     if(length(sudo_URL)>0){
       sudo_Repin_URL = paste(sudo_URL, "repins/", sep = "")
       Pin_URL = c(Pin_URL, sudo_URL)
-    Repin_URL = c(Repin_URL, sudo_Repin_URL)
+      Repin_URL = c(Repin_URL, sudo_Repin_URL)
     }
 }
-Pin_Summary = data.frame(Pin_URL,ID_Pin_Board
-                         , Pinner, Pin_Origin)
+  
     ####issues
 #      for(i in 1:length(sudo_URL)){
 #        Pinned_URL = htmlParse(GET(sudo_URL[i]), useInternal = TRUE)
