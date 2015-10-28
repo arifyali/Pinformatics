@@ -1,4 +1,4 @@
-##2013
+###2014
 ####August 31th came up with the idea of a Infomatics page after miserable internship experience
 ###Sept 6th, file was created and attempts at accessing Pinterest were carried out but unsuccessful
 ####Sept 12th, successfully wrote a section of script to access the Pin Borad URLS of a User
